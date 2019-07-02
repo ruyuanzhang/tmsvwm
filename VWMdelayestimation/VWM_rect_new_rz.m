@@ -10,12 +10,26 @@
 clear all;
 
 %% Parameter you want to change
+addpath(genpath('')); % add the RZutil directory here and the end of this script
 subj = 'RZ';
-nStim = input('Please input number of stimuli: ', '%d');
+nStim = input('Please input number of stimuli (set size = 1,3,4,6)?: ');
+monitor = 2; % which monitor to use, 1, 210east; 2 210middle (default)
+nTrials = 160; % how many trials
 
-nTrials = 160;
-scrSize = []; % [width, height] cm
-scale_factor = 2; % important factor
+%% calculation monitor parameters
+if monitor == 1 % 210east
+    scrSize = [47.5 30.5]; % [width, height] cm
+    resolution = [1024 768]; % pixels
+    viewDist = 52; %cm
+elseif monitor == 2 %210middle
+    scrSize = [40.5 30.5]; % [width, height] cm
+    resolution = [1920 1440];
+    viewDist = 52;    
+else
+    error('wrong monitor!')
+end
+scale_factor = atand(scrSize(1)/2/viewDist)*2*60/resolution(1);
+
 %% stimuli parameters
 ovalr = 5; % pixels, radius of fixation oval
 radin = 7.8; % deg,
@@ -41,7 +55,7 @@ colorinfo=zeros(100, 8, 3);  %
 Screen('Preference', 'SkipSyncTests', 1);
 Screens = Screen('Screens');
 ScreenNum = max(Screens); 
-[w, wRect] = Screen('OpenWindow', ScreenNum, [bg bg bg], [], [], [], [], 4); 
+[w, wRect] = Screen('OpenWindow', ScreenNum, [255 255 255], [], [], [], [], 4); 
 scr.width = wRect(3);
 scr.height = wRect(4);
 
@@ -77,8 +91,8 @@ for trial = 1:nTrials
     WaitSecs(a);
     
     %% Sample array
-    Screen('FillRect',w,[bg bg bg]); 
-    Screen('TextSize',w,35);        
+    Screen('FillRect',w, [bg bg bg]); 
+    Screen('TextSize',w, 35);        
     Screen('FrameOval', w, 0,[scr.width/2-ovalr, scr.height/2-ovalr, scr.width/2+ovalr, scr.height/2+ovalr],2,2)
     
     % We randomly start the color wheel
@@ -118,6 +132,7 @@ for trial = 1:nTrials
     
     %% delay
     Screen('FillRect', w, [bg bg bg]); %delay period
+    Screen('FrameOval', w, 0,[scr.width/2-ovalr, scr.height/2-ovalr, scr.width/2+ovalr, scr.height/2+ovalr],2,2)
     Screen('Flip',w);
     WaitSecs(delayDur);
     
@@ -165,6 +180,7 @@ for trial = 1:nTrials
 %     end
 
     Screen('FillRect',w,[bg bg bg]);
+    Screen('FrameOval', w, 0,[scr.width/2-ovalr, scr.height/2-ovalr, scr.width/2+ovalr, scr.height/2+ovalr],2,2)
     Screen('Flip',w);
     b = randsample(200:50:400,1)/1000; % random delay
     WaitSecs(b);
@@ -178,7 +194,7 @@ if exist(filename,'file')
 end
 save(filename);
 Screen('CloseAll');
-
+rmpath(genpath('')); % remove the RZutil directory here
 
 
 

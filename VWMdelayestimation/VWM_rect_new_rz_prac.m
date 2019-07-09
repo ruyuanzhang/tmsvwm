@@ -4,7 +4,6 @@
 % 
 %
 % History
-%   20190709 RZ adds brainSite
 %   20190629 RZ modified original code
 
 
@@ -12,13 +11,10 @@ clear all;
 
 %% Parameter you want to change
 addpath(genpath('')); % add the RZutil directory here and the end of this script
-
-subj = input('Please the subject initial (e.g., RZ)?: ','s');
-brainSite = input('Please the simulation site (IPS/V1/DLPFC)?: ','s');
-nStim = input('Please input number of stimuli (set size = 2,4,6)?: ');
-
+subj = 'RZ';
+nStim = 2;
 monitor = 2; % which monitor to use, 1, 210east; 2 210middle (default)
-nTrials = 200; % how many trials
+nTrials = 50; % how many trials
 
 %% calculation monitor parameters
 if monitor == 1 % 210east
@@ -192,7 +188,7 @@ for trial = 1:nTrials
 end
 
 % Save the data
-filename = strcat(subj,sprintf('_set%d_%s',nStim, brainSite),datestr(now,'yymmddHHMM'),'.mat');
+filename = strcat(subj,sprintf('_set%d_',nStim),datestr(now,'yymmddHHMM'),'_prac.mat');
 if exist(filename,'file')
     error('data file name exists')
 end

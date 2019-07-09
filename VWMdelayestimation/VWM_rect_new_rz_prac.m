@@ -11,7 +11,7 @@ clear all;
 
 %% Parameter you want to change
 addpath(genpath('')); % add the RZutil directory here and the end of this script
-subj = 'RZ';
+subj = input('Please the subject initial (e.g., RZ)?: ','s');
 nStim = 2;
 monitor = 2; % which monitor to use, 1, 210east; 2 210middle (default)
 nTrials = 50; % how many trials

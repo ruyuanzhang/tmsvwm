@@ -199,7 +199,7 @@ for trial = 1:nTrials
     end
     
 end
-results.error = circulardiff(results.resp,results.prob,180);
+results.error = circulardiff(results.resp,results.probe,180);
 
 % Save the data
 filename = strcat(subj,sprintf('day%d_set%d_%s',day,nStim, brainSite),datestr(now,'yymmddHHMM'),'.mat');

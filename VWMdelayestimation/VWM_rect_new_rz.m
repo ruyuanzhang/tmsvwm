@@ -199,6 +199,7 @@ for trial = 1:nTrials
     end
     
 end
+results.error = circulardiff(results.resp,results.prob,180);
 
 % Save the data
 filename = strcat(subj,sprintf('day%d_set%d_%s',day,nStim, brainSite),datestr(now,'yymmddHHMM'),'.mat');
@@ -210,10 +211,10 @@ Screen('CloseAll');
 
 
 %% calculate the response and save it
-results.error = circulardiff(results.resp,results.prob,180);
 histogram(results.error,10);
 xlim([-90 90]);
 xlabel('Resp error (deg)');
+ylabel('Number of trial');
 saveas(gcf, filename(1:end-4), 'png'); % save the figure
 
 

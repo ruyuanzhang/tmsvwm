@@ -8,17 +8,18 @@
 %   20190629 RZ modified original code
 
 
-clear all;
+clear all;close all;
 
 %% Parameter you want to change
-addpath(genpath('')); % add the RZutil directory here and the end of this script
 
+addpath(genpath('')); % add the RZutil directory here and the end of this script
+day = input('Please the day number (1-4)?: ');
 subj = input('Please the subject initial (e.g., RZ)?: ','s');
-brainSite = input('Please the simulation site (IPS/V1/DLPFC)?: ','s');
+brainSite = input('Please the simulation site (sham/IPS/V1/DLPFC)?: ','s');
 nStim = input('Please input number of stimuli (set size = 2,4,6)?: ');
 
 monitor = 2; % which monitor to use, 1, 210east; 2 210middle (default)
-nTrials = 200; % how many trials
+nTrials = 120; % how many trials
 
 %% calculation monitor parameters
 if monitor == 1 % 210east
@@ -124,7 +125,6 @@ for trial = 1:nTrials
     color_list(posi(1:length(x)),:) = colorscale(x,:);
     results.stimuli(trial,:) = x; % save results
     results.probe(trial) = x(1); % the 1st one is always the target
-    results.probe(trial)
     % draw stimuli
     colored = find(color_list(:,1)>1); % how many stimuli
     for ind = 1:length(colored)
@@ -189,15 +189,35 @@ for trial = 1:nTrials
     b = randsample(200:50:400,1)/1000; % random delay
     WaitSecs(b);
     
+    
+    if trial == nTrials/2
+        Screen('DrawTexture',w,GratingIndex,GRect,cGRect);  
+        Screen('DrawText',w,'Rest, press space to continue..',scr.width/2-300,scr.height/2,0); 
+        Screen('Flip',w);  %
+        getkeyresp('space'); % wait for space to start the experiment
+        
+    end
+    
 end
 
 % Save the data
-filename = strcat(subj,sprintf('_set%d_%s',nStim, brainSite),datestr(now,'yymmddHHMM'),'.mat');
+filename = strcat(subj,sprintf('day%d_set%d_%s',day,nStim, brainSite),datestr(now,'yymmddHHMM'),'.mat');
 if exist(filename,'file')
     error('data file name exists')
 end
 save(filename);
 Screen('CloseAll');
+
+
+%% calculate the response and save it
+results.error = circulardiff(results.resp,results.prob,180);
+histogram(results.error,10);
+xlim([-90 90]);
+xlabel('Resp error (deg)');
+saveas(gcf, filename(1:end-4), 'png'); % save the figure
+
+
+%%
 rmpath(genpath('')); % remove the RZutil directory here
 
 

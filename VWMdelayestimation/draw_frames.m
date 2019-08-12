@@ -1,6 +1,11 @@
 % Draw test frames
 function [bold] = draw_frames(wnd,positionscale,color_list)
-
+% <wnd>: window index
+% <positionscale>: the matrix save the pixel-level position of all possible
+% targets
+% <color_list>: n * 3, color matrix of all targets
+%
+% <bold>: position index of the bold frame (probe)
 colored=find(color_list(:,1)>1); % find which color to draw
 
 rng(GetSecs);

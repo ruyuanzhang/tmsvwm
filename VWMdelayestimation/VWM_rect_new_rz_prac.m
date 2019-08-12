@@ -1,19 +1,27 @@
-% 2014/10/11
 % VWM color-delayed estimation task
 %
 % 
 %
 % History
+%   20190808 RZ save revise the code and save more inforamtion.
+%   20190709 RZ adds brainSite
 %   20190629 RZ modified original code
 
 
-clear all;
+clear all;close all;
 
 %% Parameter you want to change
+
 addpath(genpath('')); % add the RZutil directory here and the end of this script
-subj = input('Please the subject initial (e.g., RZ)?: ','s');
+
+
+subj = input('Please the subject initial (e.g., RYZ or RZ)?: ','s');
+
+brainSite = 'prac';
 nStim = 2;
-monitor = 2; % which monitor to use, 1, 210east; 2 210middle (default)
+day = 1;
+
+monitor = 2; % which monitor to use, 1, 210east; 2, 210middle (default)
 nTrials = 50; % how many trials
 
 %% calculation monitor parameters
@@ -68,17 +76,21 @@ Screen('DrawTexture',w,GratingIndex,GRect,cGRect);
 Screen('Flip',w);  %
 getkeyresp('space'); % wait for space to start the experiment
 
-
+% calculate all possible positions
 positionscale = get_position(nPosi, posiRadius, [shapeSize shapeSize], [scr.width/2 scr.height/2]); % get the possible positions of stimuli
 % load RGB values of standard color space
 colorscale = load('colorscale','colorscale');
 colorscale = colorscale.colorscale;
-%% Start
-results.resp=zeros(1, nTrials);
-results.stimuli=zeros(nTrials, nStim);
-results.RT = zeros(1, nTrials);
-results.testPosi = zeros(1,nTrials); % probe position, 1-8
-results.probe = zeros(1,nTrials);
+%% start
+results.colorWheelStart=zeros(1, nTrials); % the start number of the colorwheel
+results.respInd=zeros(1, nTrials); % response color index, 0~180
+results.respIndArc=zeros(1, nTrials); % response degree on the colorwheel, 0~360
+results.stimuliInd=zeros(nTrials, nStim); % all stimuli color index
+results.RT = zeros(1, nTrials); % reaction time
+results.probePosiInd = zeros(1,nTrials); % probe position index, 1-8
+results.probeInd = zeros(1,nTrials); % probe color index, 0~180
+results.colorList = cell(1,nTrials); % colorlist for all stimull
+results.posiInd = zeros(nTrials,nStim); % position index of all targets, 1-8
 
 for trial = 1:nTrials  
     HideCursor;
@@ -95,7 +107,7 @@ for trial = 1:nTrials
     Screen('TextSize',w, 35);        
     Screen('FrameOval', w, 0,[scr.width/2-ovalr, scr.height/2-ovalr, scr.width/2+ovalr, scr.height/2+ovalr],2,2)
     
-    % We randomly start the color wheel
+    % We randomly start the color wheel to sample the colors of targets
     rng(GetSecs);
     start = floor(rand()*180)+1;     
     if start > 1 && start < 180
@@ -105,7 +117,6 @@ for trial = 1:nTrials
     elseif start==180
         color_index = [180 1:179];
     end
-    
     % We do not want stimuli colors are too closed, so we set candidate
     % colors apart
     rng(GetSecs);
@@ -114,17 +125,22 @@ for trial = 1:nTrials
     rd_index = floor(rd_index/2)+1;  % color is 180 so we divided by 2  
     
     rng(GetSecs);
-    x = randsample(color_index(rd_index), nStim); % sample color index
+    x = randsample(color_index(rd_index), nStim); % choose n stim
+    results.stimuliInd(trial,:) = x; % save the color index of all targes
+    
+    % get the position
     posi = randperm(nPosi);  % random positions, correponding to positionscale     
+    posi = posi(1:nStim); 
+    results.posiInd(trial,:) = posi;
+    
+    % create the color_list for this trial
     color_list = zeros(nPosi,3);
-    color_list(posi(1:length(x)),:) = colorscale(x,:);
-    results.stimuli(trial,:) = x; % save results
-    results.probe(trial) = x(1); % the 1st one is always the target
-    results.probe(trial)
+    color_list(posi,:) = colorscale(x,:);
+    results.colorList{trial} = color_list;
+   
     % draw stimuli
-    colored = find(color_list(:,1)>1); % how many stimuli
-    for ind = 1:length(colored)
-        Screen('FillRect', w, color_list(colored(ind),:), positionscale(colored(ind),:));
+    for ind = 1:length(posi)
+        Screen('FillRect', w, color_list(posi(ind),:), positionscale(posi(ind),:)); % change these part, otherwise the nearby color tend to be the same color
     end
     
     Screen('Flip',w);
@@ -138,13 +154,16 @@ for trial = 1:nTrials
     
     %% test array
     cpoint = [round(scr.width/2) round(scr.height/2)]; % center point
-    % cpoint=[round(winwidth/2) round(winheight/2)];
-    colorwheel = draw_colorscale(w, cpoint, radin, radout, colorscale);       
+    colorwheel = draw_colorscale(w, cpoint, radin, radout, colorscale);
+    results.colorWheelStart(trial) = colorwheel(1); % % save the start point of colorwheel information
+    
     % fixation point
     Screen('FrameOval', w, 0,[scr.width/2-ovalr, scr.height/2-ovalr, scr.width/2+ovalr, scr.height/2+ovalr],2,2)
-    results.testPosi(trial)=draw_frames(w, positionscale, color_list); % output bold is the row index in color_list, which is the bolded color
-    Screen('Flip',w);
     
+    % draw frames
+    results.probePosiInd(trial)=draw_frames(w, positionscale, color_list); % output bold is the row index in color_list, which is the bolded color
+    results.probeInd(trial) = x(find(posi == results.probePosiInd(trial)));
+    Screen('Flip',w);
     %% response
     time1 = GetSecs;   %
     ShowCursor(0, w); % not sure why we need to call this twice
@@ -169,15 +188,9 @@ for trial = 1:nTrials
     end
     
     % Convert 2 colorindex
-    results.resp(trial) = colorwheel(floor(Arc/2)+1);
-%     for ind = 1:180
-%         for j=1:length(boldlist)
-%             if sum(colorscale(ind,:)==color_list(boldlist(j),:))==3
-%                 ref_answer(trial,j)=ind; %
-%                 break;
-%             end
-%         end
-%     end
+    results.respIndArc(trial)=Arc; % Arc, 0~360
+    results.respInd(trial) = colorwheel(floor(Arc/2)+1); % respInd, 0~180
+    results.error(trial) = circulardiff(results.respInd(trial),results.probeInd(trial), 180);
 
     Screen('FillRect',w,[bg bg bg]);
     Screen('FrameOval', w, 0,[scr.width/2-ovalr, scr.height/2-ovalr, scr.width/2+ovalr, scr.height/2+ovalr],2,2)
@@ -185,15 +198,32 @@ for trial = 1:nTrials
     b = randsample(200:50:400,1)/1000; % random delay
     WaitSecs(b);
     
+    
+    if trial == nTrials/2
+        Screen('DrawTexture',w,GratingIndex,GRect,cGRect);  
+        Screen('DrawText',w,'Rest, press space to continue..',scr.width/2-300,scr.height/2,0); 
+        Screen('Flip',w);  %
+        getkeyresp('space'); % wait for space to start the experiment
+        
+    end
+    
 end
-
 % Save the data
-filename = strcat(subj,sprintf('_set%d_',nStim),datestr(now,'yymmddHHMM'),'_prac.mat');
+filename = strcat(subj,sprintf('_day%d_set%d_%s_',day,nStim, brainSite),datestr(now,'yymmddHHMM'),'.mat');
 if exist(filename,'file')
     error('data file name exists')
 end
 save(filename);
 Screen('CloseAll');
+
+%% calculate the response and save it
+histogram(results.error,12);
+xlim([-90 90]);
+xlabel('Resp error (color deg)');
+ylabel('Number of trials');
+saveas(gcf, filename(1:end-4), 'png'); % save the figure
+
+%%
 rmpath(genpath('')); % remove the RZutil directory here
 
 

@@ -2,6 +2,7 @@
 This is the matlab code repository for TMS visual working memory (TMVWM) project. The main contributor for this project is [Ru-Yuan Zhang](ruyuanzhang@gmail.com), Hao-Jiang Ying, and Fei Wang.
 
 ## History
+* 2019/09/11 RZ fixed the bugs 
 * 2019/07/01 RZ created the github repository
 
 
@@ -23,7 +24,7 @@ This is the matlab code repository for TMS visual working memory (TMVWM) project
 2. Data will be automatically saved with time stamp.
 
 ### Research plan
-* day 1, practice (set size = 2, 50 trials), sham (set size = 2, 4, 6, 200 trials each block)
+* day 1, practice (set size = 2, 50 trials), sham (set size = 2, 4, 6, 120 trials each block)
 * day 2, Real IPS (set size = 2, 4, 6)
 * day 3, Real V1 (set size = 2, 4, 6)
 * day 4. Real DLPFC (set size = 2, 4, 6)

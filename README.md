@@ -13,10 +13,10 @@ This is the matlab code repository for TMS visual working memory (TMVWM) project
 2. Make sure you have the proper measure of your monitor. The key factor is ***scale_factor***, which indicates how many acrmin in one screen pixel.
 
 ### Running experiment
-1. For each run, simply type below to run the experiment. It needs to input the number of stimuli (e.g., 1,3,4,6)
+1. For each run, simply type below to run the experiment. It needs to input the number of stimuli (e.g., 1,3,6)
 
 	```matlab
-	>>VWM_rect_new_rz.m
+	>> VWM_rect_new_rz.m
 	Please input the number of stimuli: 3
 	```
 

@@ -2,32 +2,38 @@
 This is the matlab code repository for TMS visual working memory (TMVWM) project. The main contributor for this project is [Ru-Yuan Zhang](ruyuanzhang@gmail.com), Hao-Jiang Ying, and Fei Wang.
 
 ## History
-* 2019/09/11 RZ fixed the bugs 
-* 2019/07/01 RZ created the github repository
+
+* 2020/11/26 RYZ made several changes
+  * set size change to [1 3 5 8], trial numbers changed to [60 120 120 60]
+  * set 4-s response window
+* 2019/09/11 RYZ fixed the bugs 
+* 2019/07/01 RYZ created the github repository
 
 
 ## Instructions of running experiments
 ### Preparation
 1. Please download utility functions from [RZutil](https://github.com/ruyuanzhang/RZutil), and add the functions to your matlab path.
 
-2. Make sure you have the proper measure of your monitor. The key factor is ***scale_factor***, which indicates how many acrmin in one screen pixel.
+2. Make sure you have a proper measure of your monitor. You need to input the screen size, resolution, and view distance.
 
 ### Running experiment
 1. For each run, simply type below to run the experiment. It needs to input the number of stimuli (e.g., 1,3,6)
 
 	```matlab
 	>> VWM_rect_new_rz.m
-	Please input the number of stimuli: 3
+	Please the subject initial (e.g., RYZ or RZ)?: RYZ
+	Please choose the exp (1, main exp; 0, practice): 1
 	```
 
 
 2. Data will be automatically saved with time stamp.
 
 ### Research plan
-* day 1, practice (set size = 2, 50 trials), sham (set size = 2, 4, 6, 120 trials each block)
-* day 2, Real IPS (set size = 2, 4, 6)
-* day 3, Real V1 (set size = 2, 4, 6)
-* day 4. Real DLPFC (set size = 2, 4, 6)
+
+* day 1, practice, sham (set size = 1, 3, 5, 8, 120 trials each block)
+* day 2, Real IPS (set size = 1, 3, 5, 8)
+* day 3, Real V1 (set size = 1, 3, 5, 8)
+* day 4. Real DLPFC (set size = 1, 3, 5, 8)
 
 Notes:
 

@@ -20,22 +20,22 @@ PsychDefaultSetup(1);
 subj = input('Please the subject initial (e.g., RYZ or RZ)?: ','s');
 mainExp = input('Please choose the exp (1, main exp; 0, practice): ');
 
-% Please input the size and resolution of the monitor to present stimuli
+%% ==== Please input the size and resolution of the monitor to present stimuli
 scrSize = [32 18]; % [width, height] cm
 resolution = [2560 1600]; % pixels, be careful about the, MacOS is
+ismac = 1; % whether use mac retina screen:1, yes; 0, no
+viewDist = 50; %please keep the viewDist roughly 50 cm
+% ===================================================================
 
 % % office desk monitor
 % scrSize = [59.5 33.5]; % [width, height] cm
 % resolution = [3840 2160]; % pixels, 
-
-nStim = [1 3 6 8]; % set size levels
+nStim = [1 3 5 8]; % set size levels
 if mainExp
     trialsPerStim = [60 120 120 60]; % How many trials for each set size.
 else
     trialsPerStim = [3 3 3 3]; % How many trials for each set size.
 end
-
-viewDist = 50; %please keep the viewDist roughly 50 cm
 
 %% calculation monitor parameters
 addpath(genpath('./utils')); % add the RZutil directory here and the end of this script
@@ -69,7 +69,9 @@ colorinfo=zeros(100, 8, 3);  %
 Screen('Preference', 'SkipSyncTests', 1);
 Screens = Screen('Screens');
 PsychImaging('PrepareConfiguration');
-PsychImaging('AddTask','General','UseRetinaResolution'); % for mac only
+if ismac
+    PsychImaging('AddTask','General','UseRetinaResolution'); % for mac only
+end
 ScreenNum = max(Screens); 
 %[w, wRect] = Screen('OpenWindow', ScreenNum, [255 255 255],[0 0 resolution(1) resolution(2)]); 
 [w, wRect] = PsychImaging('OpenWindow', ScreenNum);
@@ -277,7 +279,7 @@ while trial <= nTrials
     % debug purpose
     % fprintf('resp color is %d \n\n', results.respInd(trial));
     if mainExp
-        if rem(trial,60) == 0 % have rest every 60 trials
+        if rem(trial,120) == 0 % have rest every 60 trials
             Screen('FillRect',w,[255 255 255]);
             Screen('DrawTexture',w,GratingIndex,GRect,cGRect);
             Screen('DrawText',w,'Rest, press space to continue..',scr.width/2-300,scr.height/2,0);

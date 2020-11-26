@@ -1,6 +1,8 @@
-% VWM color-delayed estimation task, this is the practice
+% VWM color-delayed estimation task. This is for the TMS experiment at
+% tsinghua.
 %
 % History
+%   20201126 RZ changed the randomization
 %   20201016 RZ fixed the screen resolution on mac, combine practice and
 %       main experiment
 %   20201012 RZ add multiple levels of set size within the same session
@@ -23,11 +25,12 @@ scrSize = [32 18]; % [width, height] cm
 resolution = [2560 1600]; % pixels, be careful about the, MacOS is
 
 % % office desk monitor
-%scrSize = [59.5 33.5]; % [width, height] cm
-%resolution = [3840 2160]; % pixels, 
+% scrSize = [59.5 33.5]; % [width, height] cm
+% resolution = [3840 2160]; % pixels, 
+
 nStim = [1 3 6 8]; % set size levels
 if mainExp
-    trialsPerStim = [50 50 30 30]; % How many trials for each set size.
+    trialsPerStim = [60 120 120 60]; % How many trials for each set size.
 else
     trialsPerStim = [3 3 3 3]; % How many trials for each set size.
 end
@@ -66,7 +69,7 @@ colorinfo=zeros(100, 8, 3);  %
 Screen('Preference', 'SkipSyncTests', 1);
 Screens = Screen('Screens');
 PsychImaging('PrepareConfiguration');
-%PsychImaging('AddTask','General','UseRetinaResolution');
+PsychImaging('AddTask','General','UseRetinaResolution'); % for mac only
 ScreenNum = max(Screens); 
 %[w, wRect] = Screen('OpenWindow', ScreenNum, [255 255 255],[0 0 resolution(1) resolution(2)]); 
 [w, wRect] = PsychImaging('OpenWindow', ScreenNum);
@@ -87,14 +90,16 @@ positionscale = get_position(nPosi, posiRadius, [shapeSize shapeSize], [scr.widt
 % load RGB values of standard color space
 colorscale = load('colorscale','colorscale');
 colorscale = colorscale.colorscale;
+
 %% Start
-% create stimulus list
+% Create stimulus list
 assert(length(nStim)==length(trialsPerStim), 'Please input correct Stimulus and Trial number');
 results.stimNum = [];
+trialsPerStim = Shuffle(trialsPerStim);
+trialToBreak = trialsPerStim; % trialToBreak indicates when to have rest
 for i=1:numel(nStim)
     results.stimNum = [results.stimNum nStim(i)*ones(1,trialsPerStim(i))];
 end
-results.stimNum = Shuffle(results.stimNum);
 results.colorWheelStart = nan(1, nTrials); % the start number of the colorwheel?1~180
 results.probeInd = nan(1,nTrials); % probe color index, 1~180
 results.respInd = nan(1, nTrials); % response color index, 1~180
@@ -190,7 +195,7 @@ while trial <= nTrials
     Screen('Flip',w);
     
     
-    % for debug purpose
+%     for debug purpose
 %     fprintf('nTrials is %d \n', nTrials);
 %     fprintf('wheel start is %d \n', results.colorWheelStart(trial));
 %     fprintf('probe location is %d \n', results.probePosiInd(trial));
@@ -280,8 +285,7 @@ while trial <= nTrials
             getkeyresp('space'); % wait for space to start the experiment
             
         end
-    end
-    
+    end    
     trial = trial + 1;
 end
 Screen('CloseAll');

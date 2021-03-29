@@ -31,6 +31,8 @@ viewDist = 50; %please keep the viewDist roughly 50 cm
 % scrSize = [59.5 33.5]; % [width, height] cm
 % resolution = [3840 2160]; % pixels, 
 nStim = [1 3 5 8]; % set size levels
+
+nStim = [Shuffle(nStim(1:2)) Shuffle(nStim(3:4))]; % randomize stim
 if mainExp
     trialsPerStim = [60 120 120 60]; % How many trials for each set size.
 else
@@ -40,7 +42,6 @@ end
 %% calculation monitor parameters
 addpath(genpath('./utils')); % add the RZutil directory here and the end of this script
 nTrials = sum(trialsPerStim);
-nSetSize = sum(nStim);
 scale_factor = atand(scrSize(1)/2/viewDist)*2*60/resolution(1); % how many acrmin per pixels
 
 %% stimuli parameters

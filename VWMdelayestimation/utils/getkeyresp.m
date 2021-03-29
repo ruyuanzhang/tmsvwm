@@ -35,7 +35,7 @@ if ~iscell(targetKeys)
 end
 targetKeys = cellfun(@KbName, targetKeys); % convert keys from string to numbers
 
-% go to the main loop
+% Go to the main loop
 FlushEvents('keyDown');
 while 1
     [keyIsDown, secs, keyCode] = KbCheck(KbNum);

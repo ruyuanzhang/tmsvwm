@@ -3,6 +3,9 @@ This is the matlab code repository for TMS visual working memory (TMVWM) project
 
 ## History
 
+* 2021/03/29 RYZ 
+  * add cpsfigure.m
+  * Randomize set size [1 3] and [5 8]
 * 2020/11/26 RYZ made several changes
   * set size change to [1 3 5 8], trial numbers changed to [60 120 120 60]
   * set 4-s response window
